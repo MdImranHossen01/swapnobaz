@@ -95,8 +95,12 @@ export default function NavbarV1({ initialCategories = [], initialBrands = [] }:
     ))
   );
 
-  const [categories, setCategories] = useState<any[]>(initialCategories);
-  const [brands, setBrands] = useState<any[]>(initialBrands);
+  const [categories, setCategories] = useState<any[]>(() =>
+    initialCategories.length > 0 ? initialCategories : (settings?.categories || [])
+  );
+  const [brands, setBrands] = useState<any[]>(() =>
+    initialBrands.length > 0 ? initialBrands : (settings?.brands || [])
+  );
   const [profile, setProfile] = useState<any>(null);
 
   // Monitor scroll for sticky style transitions with rock-solid hysteresis
@@ -120,13 +124,18 @@ export default function NavbarV1({ initialCategories = [], initialBrands = [] }:
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Sync / Re-fetch categories & brands in background if needed
+  // Use server-cached categories & brands; skip client fetch when provided
   useEffect(() => {
-    if (initialCategories.length > 0) {
-      setCategories(initialCategories);
+    const resolvedCats = initialCategories.length > 0 ? initialCategories : settings?.categories;
+    const resolvedBrands = initialBrands.length > 0 ? initialBrands : settings?.brands;
+    if (resolvedCats) {
+      setCategories(resolvedCats);
     }
-    if (initialBrands.length > 0) {
-      setBrands(initialBrands);
+    if (resolvedBrands) {
+      setBrands(resolvedBrands);
+    }
+    if (isResellerStore || (resolvedCats && resolvedBrands)) {
+      return;
     }
     const controller = new AbortController();
     async function fetchData() {
@@ -151,7 +160,7 @@ export default function NavbarV1({ initialCategories = [], initialBrands = [] }:
     }
     fetchData();
     return () => controller.abort();
-  }, [initialCategories, initialBrands]);
+  }, [initialCategories, initialBrands, settings?.categories, settings?.brands, isResellerStore]);
 
   // Fetch profile
   useEffect(() => {

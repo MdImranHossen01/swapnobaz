@@ -8,6 +8,8 @@ interface SettingsContextType {
   siteDescription?: string;
   logoUrl?: string;
   marqueeText?: string;
+  categories?: any[];
+  brands?: any[];
   socialLinks?: {
     facebook?: string;
     twitter?: string;

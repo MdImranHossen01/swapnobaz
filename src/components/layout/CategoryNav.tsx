@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ChevronRight, ChevronDown, Package } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSettings } from '@/components/SettingsProvider';
 
 interface Category {
   _id: string;
@@ -13,11 +14,18 @@ interface Category {
 }
 
 export function CategoryNav({ isScrolled = true }: { isScrolled?: boolean }) {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const settings = useSettings();
+  const [categories, setCategories] = useState<Category[]>(() =>
+    (settings?.categories || []).filter((c: any) => c.isActive !== false)
+  );
   const [isHovered, setIsHovered] = useState(false);
   const [activeParent, setActiveParent] = useState<string | null>(null);
 
   useEffect(() => {
+    if (settings?.categories) {
+      setCategories(settings.categories.filter((c: any) => c.isActive !== false));
+      return;
+    }
     async function fetchCats() {
       try {
         const res = await fetch('/api/categories');
@@ -30,7 +38,7 @@ export function CategoryNav({ isScrolled = true }: { isScrolled?: boolean }) {
       }
     }
     fetchCats();
-  }, []);
+  }, [settings?.categories]);
 
   const mainCategories = categories.filter(c => !c.parentCategory);
   
