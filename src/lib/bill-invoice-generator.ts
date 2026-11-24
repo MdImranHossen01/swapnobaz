@@ -106,7 +106,9 @@ export async function generateBillPDF(bill: any, settings: any, mode: 'download'
     labelNo = "CHALLAN NO #:";
   }
 
-  const invoiceId = String(bill.invoiceNo || bill._id || "").slice(-11).toUpperCase();
+  const invoiceId = bill.invoiceNo || bill.billNo
+    ? String(bill.invoiceNo || bill.billNo).toUpperCase()
+    : String(bill._id || "").slice(-11).toUpperCase();
   const billDate = bill.date ? new Date(bill.date) : new Date();
   const formattedDate = billDate && isValid(billDate) ? format(billDate, "dd MMM yyyy") : "N/A";
 
@@ -136,13 +138,21 @@ export async function generateBillPDF(bill: any, settings: any, mode: 'download'
   const isBill = docType === 'bill';
   const isOffer = docType === 'offer';
   const isChalan = docType === 'chalan';
+  const isSupplierBill = Boolean((bill.supplier && typeof bill.supplier === 'object') || (bill.billNo && !bill.clientName));
+
+  const partyName = bill.clientName || bill.supplier?.name || bill.supplierName || (isSupplierBill ? 'Supplier Name' : 'Client Name');
+  const partyCompany = bill.supplier?.companyName || bill.companyName || '';
+  const partyPhone = bill.clientPhone || bill.supplier?.phone || '';
+  const partyEmail = bill.clientEmail || bill.supplier?.email || '';
+  const partyAddress = bill.clientAddress || bill.supplier?.address || '';
+  const expectedPayDate = bill.expectedReceivableDate || bill.expectedPaymentDate;
 
   const subtitle = isOffer
     ? 'Price Quotation / Offer'
     : isChalan
       ? 'Goods Delivery Note'
       : 'Tax Invoice / Bill';
-  const clientLabel = isOffer ? 'Quotation To' : isChalan ? 'Deliver To' : 'Bill To';
+  const clientLabel = isOffer ? 'Quotation To' : isChalan ? 'Deliver To' : isSupplierBill ? 'Supplier' : 'Bill To';
   const noLabel = isOffer ? 'Quotation No' : isChalan ? 'Challan No' : 'Bill No';
 
   const fmt = (n: any) => `৳${Math.round(Number(n) || 0).toLocaleString()}`;
@@ -159,8 +169,8 @@ export async function generateBillPDF(bill: any, settings: any, mode: 'download'
   const totalVal = Math.round(bill.total || 0);
   const prevDueVal = Math.round(bill.prevDue || 0);
   const grandVal = Math.round(bill.gTotal ?? bill.total ?? 0);
-  const paidVal = Math.round(bill.cashIn || 0);
-  const remainingVal = Math.round(bill.currentBillDue ?? Math.max(0, grandVal - paidVal));
+  const paidVal = Math.round(bill.cashIn ?? bill.paidAmount ?? 0);
+  const remainingVal = Math.round(bill.currentBillDue ?? bill.dueAmount ?? Math.max(0, grandVal - paidVal));
 
   const itemRows = items
     .map((item: any, idx: number) => {
@@ -255,7 +265,7 @@ export async function generateBillPDF(bill: any, settings: any, mode: 'download'
     ? ['Client Acceptance', 'Authorized Signature']
     : isChalan
       ? ['Received By', 'Delivered By', 'Authorized Signature']
-      : ['Client Signature', 'Authorized Signature'];
+      : [isSupplierBill ? 'Supplier Signature' : 'Client Signature', 'Authorized Signature'];
   const sigHtml = sigLabels
     .map((l, i) => `<div style="text-align:${i === 0 ? 'left' : i === sigLabels.length - 1 ? 'right' : 'center'};"><div class="sig-line">${l}</div></div>`)
     .join('');
@@ -356,17 +366,18 @@ export async function generateBillPDF(bill: any, settings: any, mode: 'download'
             <div>${noLabel}: <span>${esc(invoiceId)}</span></div>
             <div>Date: <span>${formattedDate}</span></div>
             ${isBill ? `<div>Status: <span>${esc(bill.status || 'Pending')}</span></div>` : ''}
-            ${isBill && bill.status === 'Due' && bill.expectedReceivableDate ? `<div>Expected Payment: <span>${safeDate(bill.expectedReceivableDate)}</span></div>` : ''}
+            ${isBill && bill.status === 'Due' && expectedPayDate ? `<div>Expected Payment: <span>${safeDate(expectedPayDate)}</span></div>` : ''}
             ${isBill && bill.expectedDeliveryDate ? `<div>Expected Delivery: <span>${safeDate(bill.expectedDeliveryDate)}</span></div>` : ''}
             ${isChalan && bill.expectedDeliveryDate ? `<div>Delivery Date: <span>${safeDate(bill.expectedDeliveryDate)}</span></div>` : ''}
           </div>
         </div>
         <div class="info-block">
           <div class="info-label">${clientLabel}</div>
-          <div class="info-value">${esc(bill.clientName || 'Client Name')}</div>
-          ${bill.clientPhone ? `<div class="info-small">Phone: ${esc(bill.clientPhone)}</div>` : ''}
-          ${bill.clientEmail ? `<div class="info-small">Email: ${esc(bill.clientEmail)}</div>` : ''}
-          ${bill.clientAddress ? `<div class="info-small">Address: ${esc(bill.clientAddress)}</div>` : ''}
+          <div class="info-value">${esc(partyName)}</div>
+          ${partyCompany ? `<div class="info-small" style="font-weight:600;">${esc(partyCompany)}</div>` : ''}
+          ${partyPhone ? `<div class="info-small">Phone: ${esc(partyPhone)}</div>` : ''}
+          ${partyEmail ? `<div class="info-small">Email: ${esc(partyEmail)}</div>` : ''}
+          ${partyAddress ? `<div class="info-small">Address: ${esc(partyAddress)}</div>` : ''}
         </div>
       </div>
 
