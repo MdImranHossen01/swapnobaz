@@ -194,6 +194,8 @@ export default async function ResellerShopPage({ params, searchParams }: Props) 
   const logo = reseller.logoUrl;
   const settingsData = {
     isReseller: true,
+    categories,
+    brands,
     brandName: storeName,
     logoUrl: logo,
     contact: {
@@ -220,7 +222,7 @@ export default async function ResellerShopPage({ params, searchParams }: Props) 
           metaPixelId={reseller.seoConfig?.metaPixelId} 
           tiktokPixelId={reseller.seoConfig?.tiktokPixelId} 
         />
-        <NavbarSelector style={navStyle} />
+        <NavbarSelector style={navStyle} initialCategories={categories} initialBrands={brands} />
         <main className="min-h-[70vh]">
           <Suspense fallback={<ShopFallback />}>
             <ShopListingSelector
