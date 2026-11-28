@@ -37,7 +37,7 @@ export function NewsletterV2({ layout }: { layout?: string }) {
 
             if (res.ok) {
                 setSubscribed(true);
-                toast.success(data.message || "Welcome aboard! You've successfully subscribed.");
+                toast.success("Thank you for subscribing! Welcome to the Swapnobaz community.");
                 localStorage.setItem('newsletter_subscribed', 'true');
             } else {
                 toast.error(data.message || "Failed to subscribe. Please try again.");
@@ -71,61 +71,70 @@ export function NewsletterV2({ layout }: { layout?: string }) {
 
                     {/* Left Side: Content */}
                     <div className="flex-1 text-center md:text-left space-y-4">
-                        <div className="space-y-1">
+                        <div className="space-y-1.5">
                             <p className="text-[11px] font-black tracking-[0.2em] uppercase opacity-70">
                                 Our Newsletter
                             </p>
                             <h2 className={`text-4xl ${layout === 'v3' ? 'lg:text-2xl' : 'md:text-5xl'} font-black tracking-tighter italic leading-none`}>
                                 BE THE FIRST TO KNOW!
                             </h2>
+                            <p className={`text-sm ${layout === 'v3' ? 'lg:text-xs' : 'md:text-base'} font-semibold text-white/95 pt-1`}>
+                                Get exclusive deals, new arrivals, and special offers from Swapnobaz.
+                            </p>
                         </div>
                         <p className={`text-lg ${layout === 'v3' ? 'lg:text-sm' : 'md:text-xl'} font-medium text-white/90`}>
                             Be part of our community and receive handpicked products, exciting offers, and the latest updates directly in your inbox.
                         </p>
-                        <p className="hidden md:block text-[10px] font-bold uppercase tracking-widest text-white/40">
-                            UNSUBSCRIBE ANYTIME • NO SPAM • PRIVACY PROTECTED
+                        <p className="hidden md:block text-[11px] font-bold tracking-wider text-white/60">
+                            No spam • Unsubscribe anytime • Privacy protected
                         </p>
                     </div>
 
                     {/* Right Side: Form */}
-                    <div className={`w-full md:w-auto ${layout === 'v3' ? 'lg:min-w-[320px] lg:max-w-[320px]' : 'md:min-w-[400px]'}`}>
+                    <div className={`w-full md:w-auto ${layout === 'v3' ? 'lg:min-w-[340px] lg:max-w-[340px]' : 'md:min-w-[440px]'}`}>
                         {subscribed ? (
                             <div className="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl flex items-center gap-4 animate-in fade-in zoom-in duration-500">
                                 <div className="bg-white rounded-full p-2 text-primary">
                                     <CheckCircle2 className="size-6" />
                                 </div>
                                 <div className="text-left">
-                                    <p className="font-bold">You&apos;re on the list!</p>
-                                    <p className="text-xs text-white/70">You will now receive our latest news and updates directly.</p>
+                                    <p className="font-bold">Thank you for subscribing!</p>
+                                    <p className="text-xs text-white/80">Welcome to the Swapnobaz community.</p>
                                 </div>
                             </div>
                         ) : (
-                            <form onSubmit={handleSubscribe} className="w-full relative group">
-                                <Input
-                                    type="email"
-                                    placeholder="Enter your email"
-                                    className={`h-14 ${layout === 'v3' ? 'lg:h-11 lg:text-sm lg:pl-4' : 'pl-6 pr-36'} w-full rounded-xl bg-white/10 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus-visible:ring-white/30 transition-all text-base`}
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                />
-                                <div className={`absolute right-1.5 top-1.5 ${layout === 'v3' ? 'lg:right-1 lg:top-1' : ''}`}>
-                                    <Button
-                                        type="submit"
-                                        className={`h-11 px-6 rounded-lg bg-white text-black hover:bg-white/90 font-black text-xs uppercase tracking-widest gap-2 shadow-lg ${layout === 'v3' ? 'lg:h-9 lg:px-4 lg:text-[10px]' : ''}`}
-                                        disabled={loading}
-                                    >
-                                        {loading ? (
-                                            <Loader2 className="size-4 animate-spin" />
-                                        ) : (
-                                            <>Subscribe <Send className="size-3" /></>
-                                        )}
-                                    </Button>
+                            <form onSubmit={handleSubscribe} className="w-full space-y-1.5">
+                                <label htmlFor="newsletter-email" className="block text-xs font-semibold text-white/85 pl-1">
+                                    Your Email Address
+                                </label>
+                                <div className="flex flex-col gap-2.5 sm:block sm:relative group">
+                                    <Input
+                                        id="newsletter-email"
+                                        type="email"
+                                        placeholder="Enter your email address"
+                                        className={`h-12 sm:h-14 px-4 ${layout === 'v3' ? 'sm:pl-4 sm:pr-40 lg:h-11 lg:text-sm lg:pl-4 lg:pr-36' : 'sm:pl-6 sm:pr-44'} w-full rounded-xl bg-white/10 backdrop-blur-sm border-white/20 text-white placeholder:text-white/50 focus-visible:ring-white/30 transition-all text-sm sm:text-base`}
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        required
+                                    />
+                                    <div className={`sm:absolute sm:right-1.5 sm:top-1.5 ${layout === 'v3' ? 'lg:right-1 lg:top-1' : ''}`}>
+                                        <Button
+                                            type="submit"
+                                            className={`w-full sm:w-auto h-11 px-5 rounded-lg bg-white text-black hover:bg-white/90 font-black text-xs uppercase tracking-widest gap-2 shadow-lg ${layout === 'v3' ? 'lg:h-9 lg:px-3 lg:text-[10px]' : ''}`}
+                                            disabled={loading}
+                                        >
+                                            {loading ? (
+                                                <Loader2 className="size-4 animate-spin" />
+                                            ) : (
+                                                <>SUBSCRIBE NOW <Send className="size-3" /></>
+                                            )}
+                                        </Button>
+                                    </div>
                                 </div>
                             </form>
                         )}
-                        <p className="md:hidden mt-4 text-[10px] font-bold uppercase tracking-widest text-white/40 text-center">
-                            UNSUBSCRIBE ANYTIME • NO SPAM
+                        <p className="md:hidden mt-4 text-[11px] font-bold tracking-wider text-white/60 text-center">
+                            No spam • Unsubscribe anytime • Privacy protected
                         </p>
                     </div>
 

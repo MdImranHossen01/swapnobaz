@@ -57,6 +57,7 @@ import Swal from 'sweetalert2';
 const navItems = [
   { href: '/', label: 'Home' },
   { href: '/shop', label: 'Shop' },
+  { href: '/service', label: 'Service' },
   { href: '/blog', label: 'Blogs' },
   { href: '/contact', label: 'Contact' },
 ];
@@ -783,6 +784,17 @@ export default function NavbarV1({ initialCategories = [], initialBrands = [] }:
                       Shop
                     </Link>
                   </div>
+
+                  {/* Service Tab */}
+                  <div className="py-1 shrink-0">
+                    <Link
+                      href="/service"
+                      onClick={handleCloseMegaMenu}
+                      className={`text-[12px] xl:text-[13px] font-semibold uppercase tracking-tight transition-colors flex items-center whitespace-nowrap py-0.5 px-1.5 rounded-md hover:bg-muted/40 ${pathname === '/service' ? 'text-primary font-bold' : 'text-foreground/85 hover:text-primary'}`}
+                    >
+                      Service
+                    </Link>
+                  </div>
                 </div>
               </div>
 
@@ -1336,6 +1348,17 @@ export default function NavbarV1({ initialCategories = [], initialBrands = [] }:
                         className={`text-[12px] xl:text-[13px] font-semibold uppercase tracking-tight transition-colors flex items-center whitespace-nowrap py-0.5 px-1.5 rounded-md hover:bg-muted/40 ${pathname === '/shop' ? 'text-primary font-bold' : 'text-foreground/85 hover:text-primary'}`}
                       >
                         Shop
+                      </Link>
+                    </div>
+
+                    {/* Service Tab */}
+                    <div className="py-1 shrink-0">
+                      <Link
+                        href="/service"
+                        onClick={handleCloseMegaMenu}
+                        className={`text-[12px] xl:text-[13px] font-semibold uppercase tracking-tight transition-colors flex items-center whitespace-nowrap py-0.5 px-1.5 rounded-md hover:bg-muted/40 ${pathname === '/service' ? 'text-primary font-bold' : 'text-foreground/85 hover:text-primary'}`}
+                      >
+                        Service
                       </Link>
                     </div>
                   </div>
